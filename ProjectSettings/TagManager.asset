@@ -16,7 +16,7 @@ TagManager:
   - 
   - Player
   - Enemy
-  - 
+  - Ground
   - 
   - 
   - 
@@ -47,4 +47,7 @@ TagManager:
     locked: 0
   - name: Platform
     uniqueID: 1208803495
+    locked: 0
+  - name: Charater
+    uniqueID: 1009474949
     locked: 0
