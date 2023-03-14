@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Tracing;
@@ -17,6 +18,10 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Transform m_Foot;
     [SerializeField] private Vector2 m_GroundCastSize;
 
+    //Climb
+    [SerializeField] private LayerMask m_ClimbableLayerMask;
+    [SerializeField] private float m_ClimbSpeed;
+
     private int m_AttackHash;
     private int m_DyingHash;
     private int m_IdleHash;
@@ -25,6 +30,8 @@ public class PlayerController : MonoBehaviour
     private Vector2 m_Movementinput;
     private bool m_OnGround;
     private int m_JumpCount;
+    private bool m_AttackInput;
+    private Collider2D m_collider2D;
 
     private void OnEnable()
     {
@@ -38,6 +45,10 @@ public class PlayerController : MonoBehaviour
             m_PlayerInput.Player.Jump.started += OnJump;
             m_PlayerInput.Player.Jump.performed += OnJump;
             m_PlayerInput.Player.Jump.canceled += OnJump;
+
+            m_PlayerInput.Player.Attack.started += OnAttack;
+            m_PlayerInput.Player.Attack.performed += OnAttack;
+            m_PlayerInput.Player.Attack.canceled += OnAttack;
         }
         m_PlayerInput.Enable();
     }
@@ -49,6 +60,7 @@ public class PlayerController : MonoBehaviour
 
     private void Start()
     {
+        TryGetComponent(out m_collider2D);
         m_AttackHash = Animator.StringToHash("Attack");
         m_DyingHash = Animator.StringToHash("Dying");
         m_IdleHash = Animator.StringToHash("Idle");
@@ -57,7 +69,7 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        
+
     }
 
     private void FixedUpdate()
@@ -66,6 +78,8 @@ public class PlayerController : MonoBehaviour
         if (m_OnGround) m_JumpCount = 0;
 
         CheckMovement();
+        CheckClimb();
+        CheckAnimation();
     }
 
     private void OnDrawGizmos()
@@ -76,22 +90,48 @@ public class PlayerController : MonoBehaviour
 
     private void CheckMovement()
     {
-        m_Rigidbody.velocity = new Vector2(m_Movementinput.x * m_WalkingSpeed, m_Rigidbody.velocity.y);
-        /* PROD 0001: Nhân v không quay đúng hướng sau khi kết thúc di chuyển
-         * Rootcause: Chưa đặt lại hướng cho nhân vật
-         * Assignee : HoangTTH
-         * TODO     : Đặt lại hướng cho nhân vật sau khi kết thúc di chuyển
-         */
-        if (m_Rigidbody.velocity.x >= 0) transform.localScale = Vector3.one;
-        else transform.localScale = new Vector3(-1,1,1);
+        //If attacking, don't move
+        if (m_AttackInput)
+            return;
 
-        if (m_Rigidbody.velocity.x != 0) PlayWalkingAnim();
-        else PlayIdleAnim();
+        m_Rigidbody.velocity = new Vector2(m_Movementinput.x * m_WalkingSpeed, m_Rigidbody.velocity.y);
+
+        if (m_Rigidbody.velocity.x >= 0) transform.localScale = Vector3.one;
+        else transform.localScale = new Vector3(-1, 1, 1);
+
+        //if (m_Rigidbody.velocity.x != 0) PlayWalkingAnim();
+        //else PlayIdleAnim();
+    }
+
+    private void CheckClimb()
+    {
+        if (m_collider2D.IsTouchingLayers(m_ClimbableLayerMask))
+        {
+            Vector2 velocity = m_Rigidbody.velocity;
+            velocity.y = m_ClimbSpeed * m_Movementinput.y;
+            m_Rigidbody.velocity = velocity;
+            m_Rigidbody.gravityScale = 0;
+        }
+        else
+        {
+            m_Rigidbody.gravityScale = 2f;
+        }
+    }
+
+    private void CheckAnimation()
+    {
+        m_Animator.SetBool(m_AttackHash, m_AttackInput);
+        m_Animator.SetBool(m_IdleHash, m_Rigidbody.velocity.x == 0 && !m_AttackInput);
+        m_Animator.SetBool(m_WalkingHash, m_Rigidbody.velocity.x != 0 && !m_AttackInput);
     }
 
     private void OnJump(InputAction.CallbackContext context)
     {
-        if (context.started || context.performed) 
+        //If attacking, don't jump
+        if (m_AttackInput)
+            return;
+
+        if (context.started || context.performed)
         {
             if (m_OnGround || m_JumpCount < 2)
             {
@@ -104,8 +144,24 @@ public class PlayerController : MonoBehaviour
 
     private void OnMovement(InputAction.CallbackContext context)
     {
-        if (context.started || context.performed) m_Movementinput = context.ReadValue<Vector2>();
-        else m_Movementinput = Vector2.zero;
+        if (context.started || context.performed)
+        {
+            m_Movementinput = context.ReadValue<Vector2>();
+            transform.localScale = new Vector3(m_Movementinput.x >= 0 ? 1 : -1, 1, 1);
+        }
+        else
+        {
+            m_Movementinput = Vector2.zero;
+        }
+    }
+
+    //Handle on attack event
+    private void OnAttack(InputAction.CallbackContext ctx)
+    {
+        if (ctx.started || ctx.performed)
+            m_AttackInput = true;
+        else
+            m_AttackInput = false;
     }
 
     [ContextMenu("Play Attack Anim")]
@@ -146,4 +202,5 @@ public class PlayerController : MonoBehaviour
         m_Animator.SetBool(m_WalkingHash, false);
         m_Animator.SetBool(m_DyingHash, false);
     }
+
 }
