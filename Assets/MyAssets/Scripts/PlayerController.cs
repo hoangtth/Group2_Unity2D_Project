@@ -96,8 +96,8 @@ public class PlayerController : MonoBehaviour
 
         m_Rigidbody.velocity = new Vector2(m_Movementinput.x * m_WalkingSpeed, m_Rigidbody.velocity.y);
 
-        if (m_Rigidbody.velocity.x >= 0) transform.localScale = Vector3.one;
-        else transform.localScale = new Vector3(-1, 1, 1);
+        //if (m_Rigidbody.velocity.x >= 0) transform.localScale = Vector3.one;
+        //else transform.localScale = new Vector3(-1, 1, 1);
 
         //if (m_Rigidbody.velocity.x != 0) PlayWalkingAnim();
         //else PlayIdleAnim();
