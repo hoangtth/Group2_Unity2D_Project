@@ -5,6 +5,8 @@ TagManager:
   serializedVersion: 2
   tags:
   - Enemy
+  - Attack
+  - MoveablePlatform
   layers:
   - Default
   - TransparentFX
@@ -18,9 +20,9 @@ TagManager:
   - Enemy
   - Ground
   - Climbable
-  - 
-  - 
-  - 
+  - PlayerAttack
+  - Stand
+  - Object
   - 
   - 
   - 

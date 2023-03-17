@@ -26,6 +26,8 @@ namespace HDTWarrior
             }
         }
 
+        public Action onEnemyDied;
+
         [SerializeField] private GameplayPanel m_GameplayPanel;
         [SerializeField] private PausePanel m_PausePanel;
         [SerializeField] private GameoverPanel m_GameoverPanel;
@@ -91,12 +93,20 @@ namespace HDTWarrior
 
         public void NextLevel()
         {
-            //TODO: load next scene
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
         }
 
         public void Restart()
         {
-            //TODO: reload current scene
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        }
+
+        public void EnemyDied()
+        {
+            if (onEnemyDied != null)
+            {
+                onEnemyDied();
+            }
         }
     }
 }

@@ -12,6 +12,19 @@ namespace HDTWarrior
         [SerializeField] private TextMeshProUGUI m_TxtHP;
         [SerializeField] private Image m_ImgHpBar;
 
+        private PlayerController m_Player;
+
+        private void OnEnable()
+        {
+            m_Player = FindObjectOfType<PlayerController>();
+            m_Player.onCurHpChanged += OnHpChanged;
+        }
+
+        private void OnDisable()
+        {
+            m_Player.onCurHpChanged -= OnHpChanged;
+        }
+
         private void OnHpChanged(int curHp, int maxHp)
         {
             m_TxtHP.text = $"{curHp}/{maxHp}";
