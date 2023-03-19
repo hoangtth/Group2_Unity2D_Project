@@ -31,6 +31,7 @@ namespace HDTWarrior
         [SerializeField] private GameplayPanel m_GameplayPanel;
         [SerializeField] private PausePanel m_PausePanel;
         [SerializeField] private GameoverPanel m_GameoverPanel;
+        [SerializeField] private LevelData m_LevelData;
 
         private GameState m_GameState;
         private bool m_Win;
@@ -93,12 +94,27 @@ namespace HDTWarrior
 
         public void NextLevel()
         {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+            string nextLevel = m_LevelData.GetNextLevel();
+            if (!string.IsNullOrEmpty(nextLevel))
+            {
+                SceneManager.LoadScene(nextLevel);
+            }
+            else
+            {
+                Debug.LogWarning("No more level");
+            }
         }
 
         public void Restart()
         {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            string firstLevel = m_LevelData.GetFirstLevel();
+            if (!string.IsNullOrEmpty(firstLevel))
+            {
+                SceneManager.LoadScene(firstLevel);
+            }
+            else {
+                Debug.LogWarning("Cannot load level 1");
+            }
         }
 
         public void EnemyDied()
