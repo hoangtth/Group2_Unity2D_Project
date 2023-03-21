@@ -7,6 +7,8 @@ TagManager:
   - Enemy
   - Attack
   - MoveablePlatform
+  - DeadLine
+  - Coin
   layers:
   - Default
   - TransparentFX
@@ -23,7 +25,7 @@ TagManager:
   - PlayerAttack
   - Stand
   - Object
-  - 
+  - Coin
   - 
   - 
   - 

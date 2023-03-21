@@ -15,5 +15,10 @@ namespace HDTWarrior
         {
             GamePlayManager.Instance.Restart();
         }
+
+        public void BtnSelect_Pressed()
+        {
+            GamePlayManager.Instance.Select();
+        }
     }
 }

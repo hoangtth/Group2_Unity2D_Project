@@ -101,20 +101,18 @@ namespace HDTWarrior
             }
             else
             {
-                Debug.LogWarning("No more level");
+                SceneManager.LoadScene("End_Scene");
             }
         }
 
         public void Restart()
         {
-            string firstLevel = m_LevelData.GetFirstLevel();
-            if (!string.IsNullOrEmpty(firstLevel))
-            {
-                SceneManager.LoadScene(firstLevel);
-            }
-            else {
-                Debug.LogWarning("Cannot load level 1");
-            }
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        }
+
+        public void Select()
+        {
+            SceneManager.LoadScene("Select_Scene");
         }
 
         public void EnemyDied()

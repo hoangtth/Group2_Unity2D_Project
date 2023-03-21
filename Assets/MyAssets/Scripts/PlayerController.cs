@@ -145,6 +145,31 @@ public class PlayerController : MonoBehaviour
 
             StartCoroutine(GetHitFX());
         }
+
+        if (collision.gameObject.CompareTag("DeadLine"))
+        {
+            m_CurHp -= 100;
+            m_Dead = true;
+            AudioManager.Instance.PlaySFX_PlayerDead();
+            GamePlayManager.Instance.Gameover(false);
+            return;
+        }
+
+        if (collision.gameObject.CompareTag("Coin"))
+        {
+            if (m_CurHp == 100)
+            {
+
+            }
+            else
+            {
+                m_CurHp += 20;
+                if (onCurHpChanged != null)
+                {
+                    onCurHpChanged(m_CurHp, m_MaxHp);
+                }
+            }
+        }
     }
 
     private IEnumerator GetHitFX()
