@@ -6,6 +6,7 @@ using System.Diagnostics.Tracing;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
@@ -28,6 +29,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private LayerMask m_ClimbableLayerMask;
     [SerializeField] private float m_ClimbSpeed;
 
+    //Dash
+    [SerializeField] private TrailRenderer tr;
+
     private int m_AttackHash;
     private int m_DyingHash;
     private int m_IdleHash;
@@ -42,6 +46,11 @@ public class PlayerController : MonoBehaviour
     private bool m_GetHit;
     private float m_GetHitTime;
     private bool m_Dead;
+    private bool canDash = true;
+    private bool isDashing;
+    private float dashPower = 15f;
+    private float dashTime = 0.2f;
+    private float dashCooldown = 2f;
 
     private void OnEnable()
     {
@@ -59,6 +68,10 @@ public class PlayerController : MonoBehaviour
             m_PlayerInput.Player.Attack.started += OnAttack;
             m_PlayerInput.Player.Attack.performed += OnAttack;
             m_PlayerInput.Player.Attack.canceled += OnAttack;
+
+            m_PlayerInput.Player.Skill.started += OnDash;
+            m_PlayerInput.Player.Skill.performed += OnDash;
+            m_PlayerInput.Player.Skill.canceled += OnDash;
         }
         m_PlayerInput.Enable();
     }
@@ -85,6 +98,13 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
+        var curScene = SceneManager.GetActiveScene().name;
+        if (curScene != "Level_1" && curScene != "Level_2")
+        {
+            if (isDashing) return; 
+        }
+        m_PlayerInput.Enable();
+
         if (m_GetHit)
         {
             m_GetHitTime -= Time.deltaTime;
@@ -97,6 +117,13 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
+        var curScene = SceneManager.GetActiveScene().name;
+        if (curScene != "Level_1" && curScene != "Level_2")
+        {
+            if (isDashing) return;
+        }
+        m_PlayerInput.Enable();
+
         if (m_GetHit || m_Dead)
         {
             return;
@@ -258,7 +285,6 @@ public class PlayerController : MonoBehaviour
 
     private void OnJump(InputAction.CallbackContext context)
     {
-        //If attacking, don't jump
         if (m_AttackInput || m_GetHit || m_Dead)
             return;
 
@@ -286,13 +312,37 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    //Handle on attack event
     private void OnAttack(InputAction.CallbackContext ctx)
     {
         if (ctx.started || ctx.performed)
             m_AttackInput = true;
         else
             m_AttackInput = false;
+    }
+
+    private void OnDash(InputAction.CallbackContext context)
+    {
+        var curScene = SceneManager.GetActiveScene().name;
+        if (context.started || context.performed)
+        {
+            if (canDash && curScene != "Level_1" && curScene != "Level_2") StartCoroutine(Dash());
+        }
+    }
+
+    private IEnumerator Dash()
+    {
+        canDash = false;
+        isDashing = true;
+        float originalGravity = m_Rigidbody.gravityScale;
+        m_Rigidbody.gravityScale = 0;
+        m_Rigidbody.velocity = new Vector2(transform.localScale.x * dashPower, 0f);
+        tr.emitting = true;
+        yield return new WaitForSeconds(dashTime);
+        tr.emitting = false;
+        m_Rigidbody.gravityScale = originalGravity;
+        isDashing = false;
+        yield return new WaitForSeconds(dashCooldown);
+        canDash = true;
     }
 
     private void PlayAttackSFX()
