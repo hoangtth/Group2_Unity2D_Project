@@ -25,7 +25,6 @@ public class EnemyController : MonoBehaviour
     [SerializeField] private LayerMask m_PlatformLayerMask;
 
     private int m_ChangeParamHash;
-
     private int m_StateParamHash;
     private State m_CurrentState;
     private int m_Direction = 1;
