@@ -13,9 +13,13 @@ namespace HDTWarrior
         public void DisplayResult(bool isWin)
         {
             if (isWin)
+            {
                 m_TxtResult.text = "YOU WIN";
+            }
             else
+            {
                 m_TxtResult.text = "YOU LOSE";
+            }
         }
 
         public void BtnNextLevel_Pressed()
