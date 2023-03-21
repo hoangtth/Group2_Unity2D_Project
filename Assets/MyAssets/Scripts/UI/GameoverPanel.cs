@@ -15,6 +15,7 @@ namespace HDTWarrior
             if (isWin)
             {
                 m_TxtResult.text = "YOU WIN";
+                
             }
             else
             {
