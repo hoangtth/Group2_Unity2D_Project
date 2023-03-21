@@ -101,13 +101,18 @@ namespace HDTWarrior
             }
             else
             {
-                Debug.LogWarning("No more level");
+                SceneManager.LoadScene("End_Scene");
             }
         }
 
         public void Restart()
         {
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        }
+
+        public void Select()
+        {
+            SceneManager.LoadScene("Select_Scene");
         }
 
         public void EnemyDied()
