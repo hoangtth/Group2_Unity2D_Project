@@ -24,13 +24,16 @@ EditorBuildSettings:
     path: Assets/MyAssets/Levels/Level_3.unity
     guid: 516fedda57d3d41a4bd758ed221f64df
   - enabled: 1
+    path: Assets/MyAssets/Levels/Level_4.unity
+    guid: 28a38d5e045a749e4a4dd9a99b29ed6d
+  - enabled: 1
     path: Assets/MyAssets/Levels/Level_5.unity
     guid: 209180e7a4dc73242be38f65c8f01f83
   - enabled: 1
     path: Assets/MyAssets/Levels/End_Scene.unity
     guid: 0c388b7f0b253c248804b957dcf1b63b
   - enabled: 0
-    path: Assets/MyAssets/Levels/Level_7.unity
+    path: 
     guid: 85b78d196a87c4ad1a08c268ff7901b4
   - enabled: 0
     path: 
