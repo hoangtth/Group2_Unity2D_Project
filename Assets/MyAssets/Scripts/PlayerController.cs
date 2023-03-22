@@ -6,6 +6,7 @@ using System.Diagnostics.Tracing;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
@@ -28,6 +29,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private LayerMask m_ClimbableLayerMask;
     [SerializeField] private float m_ClimbSpeed;
 
+    //Dash
+    [SerializeField] private TrailRenderer tr;
+
     private int m_AttackHash;
     private int m_DyingHash;
     private int m_IdleHash;
@@ -42,6 +46,13 @@ public class PlayerController : MonoBehaviour
     private bool m_GetHit;
     private float m_GetHitTime;
     private bool m_Dead;
+    private bool canDash = true;
+    private bool isDashing;
+    private float dashPower = 15f;
+    private float dashTime = 0.2f;
+    private float dashCooldown = 2f;
+    private List<string> level = new List<string> {"Level_1", "Level_2", "Start_Scene", "End_Scene"};
+    private List<string> level1 = new List<string> {"Start_Scene", "End_Scene"};
 
     private void OnEnable()
     {
@@ -59,6 +70,10 @@ public class PlayerController : MonoBehaviour
             m_PlayerInput.Player.Attack.started += OnAttack;
             m_PlayerInput.Player.Attack.performed += OnAttack;
             m_PlayerInput.Player.Attack.canceled += OnAttack;
+
+            m_PlayerInput.Player.Skill.started += OnDash;
+            m_PlayerInput.Player.Skill.performed += OnDash;
+            m_PlayerInput.Player.Skill.canceled += OnDash;
         }
         m_PlayerInput.Enable();
     }
@@ -85,6 +100,12 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
+        var curScene = SceneManager.GetActiveScene().name;
+        if (!level.Contains(curScene))
+        {
+            if (isDashing) return; 
+        }
+
         if (m_GetHit)
         {
             m_GetHitTime -= Time.deltaTime;
@@ -97,6 +118,12 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
+        var curScene = SceneManager.GetActiveScene().name;
+        if (!level.Contains(curScene))
+        {
+            if (isDashing) return;
+        }
+
         if (m_GetHit || m_Dead)
         {
             return;
@@ -227,11 +254,16 @@ public class PlayerController : MonoBehaviour
 
     private void CheckMovement()
     {
-        //If attacking, don't move
-        if (m_AttackInput)
-            return;
+        var curScene = SceneManager.GetActiveScene().name;
+        if (!level1.Contains(curScene))
+        {
+            //If attacking, don't move
+            if (m_AttackInput)
+                return;
 
-        m_Rigidbody.velocity = new Vector2(m_Movementinput.x * m_WalkingSpeed, m_Rigidbody.velocity.y);
+            m_Rigidbody.velocity = new Vector2(m_Movementinput.x * m_WalkingSpeed, m_Rigidbody.velocity.y);
+        }
+        
     }
 
     private void CheckClimb()
@@ -258,7 +290,6 @@ public class PlayerController : MonoBehaviour
 
     private void OnJump(InputAction.CallbackContext context)
     {
-        //If attacking, don't jump
         if (m_AttackInput || m_GetHit || m_Dead)
             return;
 
@@ -286,7 +317,6 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    //Handle on attack event
     private void OnAttack(InputAction.CallbackContext ctx)
     {
         if (ctx.started || ctx.performed)
@@ -295,14 +325,12 @@ public class PlayerController : MonoBehaviour
             m_AttackInput = false;
     }
 
-<<<<<<< Updated upstream
-=======
     private void OnDash(InputAction.CallbackContext context)
     {
         var curScene = SceneManager.GetActiveScene().name;
         if (context.started || context.performed)
         {
-            if (canDash && !level.Contains(curScene)) StartCoroutine(Dash());
+            if (canDash && level.Contains(curScene)) StartCoroutine(Dash());
         }
     }
 
@@ -322,7 +350,6 @@ public class PlayerController : MonoBehaviour
         canDash = true;
     }
 
->>>>>>> Stashed changes
     private void PlayAttackSFX()
     {
         AudioManager.Instance.PlaySFX_MeleeSplash();

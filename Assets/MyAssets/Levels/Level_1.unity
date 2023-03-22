@@ -2046,6 +2046,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 2048
   m_ClimbSpeed: 4
+  tr: {fileID: 0}
 --- !u!50 &922695732
 Rigidbody2D:
   serializedVersion: 4

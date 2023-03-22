@@ -275,6 +275,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4574708267383468262, guid: 814cc4c5bc87dac4db8e0840043a96e4, type: 3}
   m_PrefabInstance: {fileID: 1780713888}
   m_PrefabAsset: {fileID: 0}
+--- !u!4 &635727355 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1684829449556020412, guid: b3ad6c2b2ef31d04a9ea5717003eb1ee, type: 3}
+  m_PrefabInstance: {fileID: 1963826520}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &662223836
 GameObject:
   m_ObjectHideFlags: 0
@@ -306,7 +311,7 @@ Transform:
   - {fileID: 621235688}
   - {fileID: 1674476052}
   - {fileID: 1017339040}
-  - {fileID: 1297440080}
+  - {fileID: 635727355}
   - {fileID: 332896905}
   - {fileID: 176541375}
   m_Father: {fileID: 0}
@@ -1555,11 +1560,6 @@ Tilemap:
     e31: 0
     e32: 0
     e33: 1
---- !u!4 &1297440080 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 3072928138713187480, guid: b3ad6c2b2ef31d04a9ea5717003eb1ee, type: 3}
-  m_PrefabInstance: {fileID: 1963826520}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1311523274
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1929,6 +1929,26 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 662223837}
     m_Modifications:
+    - target: {fileID: 1684829449556020400, guid: b3ad6c2b2ef31d04a9ea5717003eb1ee, type: 3}
+      propertyPath: m_JumpForce
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1684829449556020400, guid: b3ad6c2b2ef31d04a9ea5717003eb1ee, type: 3}
+      propertyPath: m_WalkingSpeed
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1684829449556020412, guid: b3ad6c2b2ef31d04a9ea5717003eb1ee, type: 3}
+      propertyPath: m_RootOrder
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1684829449556020412, guid: b3ad6c2b2ef31d04a9ea5717003eb1ee, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -4.13
+      objectReference: {fileID: 0}
+    - target: {fileID: 1684829449556020412, guid: b3ad6c2b2ef31d04a9ea5717003eb1ee, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 2.8
+      objectReference: {fileID: 0}
     - target: {fileID: 3072928138713187461, guid: b3ad6c2b2ef31d04a9ea5717003eb1ee, type: 3}
       propertyPath: m_Name
       value: Player
