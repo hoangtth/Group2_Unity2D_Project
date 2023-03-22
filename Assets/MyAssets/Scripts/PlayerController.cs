@@ -330,7 +330,7 @@ public class PlayerController : MonoBehaviour
         var curScene = SceneManager.GetActiveScene().name;
         if (context.started || context.performed)
         {
-            if (canDash && level.Contains(curScene)) StartCoroutine(Dash());
+            if (canDash && !level.Contains(curScene)) StartCoroutine(Dash());
         }
     }
 
