@@ -295,6 +295,34 @@ public class PlayerController : MonoBehaviour
             m_AttackInput = false;
     }
 
+<<<<<<< Updated upstream
+=======
+    private void OnDash(InputAction.CallbackContext context)
+    {
+        var curScene = SceneManager.GetActiveScene().name;
+        if (context.started || context.performed)
+        {
+            if (canDash && !level.Contains(curScene)) StartCoroutine(Dash());
+        }
+    }
+
+    private IEnumerator Dash()
+    {
+        canDash = false;
+        isDashing = true;
+        float originalGravity = m_Rigidbody.gravityScale;
+        m_Rigidbody.gravityScale = 0;
+        m_Rigidbody.velocity = new Vector2(transform.localScale.x * dashPower, 0f);
+        tr.emitting = true;
+        yield return new WaitForSeconds(dashTime);
+        tr.emitting = false;
+        m_Rigidbody.gravityScale = originalGravity;
+        isDashing = false;
+        yield return new WaitForSeconds(dashCooldown);
+        canDash = true;
+    }
+
+>>>>>>> Stashed changes
     private void PlayAttackSFX()
     {
         AudioManager.Instance.PlaySFX_MeleeSplash();
