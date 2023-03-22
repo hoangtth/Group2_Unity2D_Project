@@ -33,6 +33,10 @@ namespace HDTWarrior
             GamePlayManager.Instance.Restart();
         }
 
+        public void Quit()
+        {
+            Application.Quit();
+        }
         public void StartLevelBegin()
         {
             SceneManager.LoadScene("Select_Scene");
