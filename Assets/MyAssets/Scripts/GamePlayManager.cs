@@ -115,6 +115,11 @@ namespace HDTWarrior
             SceneManager.LoadScene("Select_Scene");
         }
 
+        public void Exit()
+        {
+            Application.Quit();
+        }
+
         public void EnemyDied()
         {
             if (onEnemyDied != null)
