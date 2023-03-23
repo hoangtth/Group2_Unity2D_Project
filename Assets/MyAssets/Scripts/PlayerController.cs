@@ -52,6 +52,7 @@ public class PlayerController : MonoBehaviour
     private float dashTime = 0.2f;
     private float dashCooldown = 2f;
     private List<string> level = new List<string> {"Level_1", "Level_2", "Start_Scene", "End_Scene"};
+    private List<string> level1 = new List<string> {"Start_Scene", "End_Scene"};
 
     private void OnEnable()
     {
