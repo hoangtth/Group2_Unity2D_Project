@@ -58,8 +58,7 @@ public class PlayerController : MonoBehaviour
     private float dashPower = 15f;
     private float dashTime = 0.2f;
     private float dashCooldown = 2f;
-    private List<string> level = new List<string> { "Level_1", "Level_2", "Start_Scene", "End_Scene" };
-    private List<string> level1 = new List<string> { "Start_Scene", "End_Scene" };
+    private List<string> level = new List<string> { "Level_1", "Level_2", "Start_Level", "End_Scene" };
 
     private void OnEnable()
     {
@@ -191,13 +190,15 @@ public class PlayerController : MonoBehaviour
 
         if (collision.gameObject.CompareTag("Coin"))
         {
-            if (m_CurHp == 100)
+            if (m_CurHp == m_MaxHp)
             {
 
             }
             else
             {
-                m_CurHp += 20;
+                if (m_CurHp + 20 > m_MaxHp) m_CurHp = m_MaxHp;
+                else m_CurHp += 20;
+                
                 if (onCurHpChanged != null)
                 {
                     onCurHpChanged(m_CurHp, m_MaxHp);
@@ -302,16 +303,11 @@ public class PlayerController : MonoBehaviour
 
     private void CheckMovement()
     {
-        var curScene = SceneManager.GetActiveScene().name;
-        if (!level1.Contains(curScene))
-        {
-            //If attacking, don't move
-            if (m_AttackInput)
-                return;
+        //If attacking, don't move
+        if (m_AttackInput)
+            return;
 
-            m_Rigidbody.velocity = new Vector2(m_Movementinput.x * m_WalkingSpeed, m_Rigidbody.velocity.y);
-        }
-
+        m_Rigidbody.velocity = new Vector2(m_Movementinput.x * m_WalkingSpeed, m_Rigidbody.velocity.y);
     }
 
     private void CheckClimb()
@@ -354,23 +350,29 @@ public class PlayerController : MonoBehaviour
 
     private void OnMovement(InputAction.CallbackContext context)
     {
-        if (context.started || context.performed)
+        if (m_WalkingSpeed > 0)
         {
-            m_Movementinput = context.ReadValue<Vector2>();
-            transform.localScale = new Vector3(m_Movementinput.x >= 0 ? 1 : -1, 1, 1);
-        }
-        else
-        {
-            m_Movementinput = Vector2.zero;
+            if (context.started || context.performed)
+            {
+                m_Movementinput = context.ReadValue<Vector2>();
+                transform.localScale = new Vector3(m_Movementinput.x >= 0 ? 1 : -1, 1, 1);
+            }
+            else
+            {
+                m_Movementinput = Vector2.zero;
+            }
         }
     }
 
     private void OnAttack(InputAction.CallbackContext ctx)
     {
-        if (ctx.started || ctx.performed)
-            m_AttackInput = true;
-        else
-            m_AttackInput = false;
+        if (m_WalkingSpeed > 0)
+        {
+            if (ctx.started || ctx.performed)
+                m_AttackInput = true;
+            else
+                m_AttackInput = false;
+        } 
     }
 
     private void OnDash(InputAction.CallbackContext context)
