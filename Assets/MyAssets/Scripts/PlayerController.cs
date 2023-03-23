@@ -208,7 +208,6 @@ public class PlayerController : MonoBehaviour
 
     private IEnumerator GetHitFX()
     {
-        Debug.Log("GetHitFX() called");
         SpriteRenderer spt;
         TryGetComponent(out spt);
         Color transparent = Color.white;
@@ -241,7 +240,6 @@ public class PlayerController : MonoBehaviour
         //Check collision game obj must "ground" gameobject
         if (collision.gameObject.CompareTag("Ground") || collision.gameObject.CompareTag("MoveablePlatform"))
         {
-            Debug.Log("Ground collision");
             PlayerPositionMap.Add("New_Y_Position", transform.position.y);
             float oldPosition = 0f;
             float newPosition = 0f;
@@ -264,12 +262,10 @@ public class PlayerController : MonoBehaviour
                 {
                     onCurHpChanged(m_CurHp, m_MaxHp);
                 }
-                Debug.Log($"Damage to minus ===> {damage}");
                 //Play FX and sound
                 AudioManager.Instance.PlaySFX_PlayerGetHit();
                 StartCoroutine(GetHitFX());
             }
-            Debug.Log($"FallDistance ===> {fallDistance}");
         }
     }
 
@@ -295,7 +291,6 @@ public class PlayerController : MonoBehaviour
             }
             //Save the position when player left ground
             PlayerPositionMap.Add("Previous_Y_Position", transform.position.y);
-            Debug.Log($"Player Left Ground ===> {transform.position.y}");
         }
     }
 
