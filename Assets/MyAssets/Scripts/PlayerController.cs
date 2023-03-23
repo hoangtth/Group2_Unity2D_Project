@@ -51,7 +51,7 @@ public class PlayerController : MonoBehaviour
     private float dashPower = 15f;
     private float dashTime = 0.2f;
     private float dashCooldown = 2f;
-    private List<string> level = new List<string> {"Level_1", "Level_2", "Start_Scene", "End_Scene"};
+    private List<string> level = new List<string> {"Level_1", "Level_2", "Start_Level", "End_Scene"};
 
     private void OnEnable()
     {
@@ -300,23 +300,29 @@ public class PlayerController : MonoBehaviour
 
     private void OnMovement(InputAction.CallbackContext context)
     {
-        if (context.started || context.performed)
+        if (m_WalkingSpeed > 0)
         {
-            m_Movementinput = context.ReadValue<Vector2>();
-            transform.localScale = new Vector3(m_Movementinput.x >= 0 ? 1 : -1, 1, 1);
-        }
-        else
-        {
-            m_Movementinput = Vector2.zero;
+            if (context.started || context.performed)
+            {
+                m_Movementinput = context.ReadValue<Vector2>();
+                transform.localScale = new Vector3(m_Movementinput.x >= 0 ? 1 : -1, 1, 1);
+            }
+            else
+            {
+                m_Movementinput = Vector2.zero;
+            }
         }
     }
 
     private void OnAttack(InputAction.CallbackContext ctx)
     {
-        if (ctx.started || ctx.performed)
-            m_AttackInput = true;
-        else
-            m_AttackInput = false;
+        if (m_WalkingSpeed > 0) 
+        {
+            if (ctx.started || ctx.performed)
+                m_AttackInput = true;
+            else
+                m_AttackInput = false;
+        }
     }
 
     private void OnDash(InputAction.CallbackContext context)
