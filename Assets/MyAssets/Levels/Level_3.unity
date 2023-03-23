@@ -2892,7 +2892,7 @@ GameObject:
   - component: {fileID: 1020192877}
   m_Layer: 10
   m_Name: Platform
-  m_TagString: Untagged
+  m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3644,7 +3644,7 @@ Tilemap:
     second:
       serializedVersion: 2
       m_TileIndex: 17
-      m_TileSpriteIndex: 19
+      m_TileSpriteIndex: 20
       m_TileMatrixIndex: 0
       m_TileColorIndex: 0
       m_TileObjectToInstantiateIndex: 65535
@@ -4044,7 +4044,7 @@ Tilemap:
     second:
       serializedVersion: 2
       m_TileIndex: 17
-      m_TileSpriteIndex: 19
+      m_TileSpriteIndex: 20
       m_TileMatrixIndex: 0
       m_TileColorIndex: 0
       m_TileObjectToInstantiateIndex: 65535
@@ -4244,7 +4244,7 @@ Tilemap:
     second:
       serializedVersion: 2
       m_TileIndex: 17
-      m_TileSpriteIndex: 19
+      m_TileSpriteIndex: 20
       m_TileMatrixIndex: 0
       m_TileColorIndex: 0
       m_TileObjectToInstantiateIndex: 65535
@@ -4264,7 +4264,7 @@ Tilemap:
     second:
       serializedVersion: 2
       m_TileIndex: 17
-      m_TileSpriteIndex: 19
+      m_TileSpriteIndex: 20
       m_TileMatrixIndex: 0
       m_TileColorIndex: 0
       m_TileObjectToInstantiateIndex: 65535
@@ -4334,7 +4334,7 @@ Tilemap:
     second:
       serializedVersion: 2
       m_TileIndex: 17
-      m_TileSpriteIndex: 19
+      m_TileSpriteIndex: 20
       m_TileMatrixIndex: 0
       m_TileColorIndex: 0
       m_TileObjectToInstantiateIndex: 65535
@@ -4444,7 +4444,7 @@ Tilemap:
     second:
       serializedVersion: 2
       m_TileIndex: 17
-      m_TileSpriteIndex: 19
+      m_TileSpriteIndex: 20
       m_TileMatrixIndex: 0
       m_TileColorIndex: 0
       m_TileObjectToInstantiateIndex: 65535
@@ -4454,7 +4454,7 @@ Tilemap:
     second:
       serializedVersion: 2
       m_TileIndex: 17
-      m_TileSpriteIndex: 19
+      m_TileSpriteIndex: 20
       m_TileMatrixIndex: 0
       m_TileColorIndex: 0
       m_TileObjectToInstantiateIndex: 65535
@@ -4554,7 +4554,7 @@ Tilemap:
     second:
       serializedVersion: 2
       m_TileIndex: 17
-      m_TileSpriteIndex: 19
+      m_TileSpriteIndex: 20
       m_TileMatrixIndex: 0
       m_TileColorIndex: 0
       m_TileObjectToInstantiateIndex: 65535
@@ -5004,7 +5004,7 @@ Tilemap:
     second:
       serializedVersion: 2
       m_TileIndex: 17
-      m_TileSpriteIndex: 19
+      m_TileSpriteIndex: 20
       m_TileMatrixIndex: 0
       m_TileColorIndex: 0
       m_TileObjectToInstantiateIndex: 65535
@@ -6187,9 +6187,9 @@ Tilemap:
     m_Data: {fileID: 2114689296, guid: a97f2ced1769f2e44a939d6d746758f1, type: 3}
   - m_RefCount: 5
     m_Data: {fileID: -1819674016, guid: a97f2ced1769f2e44a939d6d746758f1, type: 3}
-  - m_RefCount: 9
-    m_Data: {fileID: -1037095020, guid: a97f2ced1769f2e44a939d6d746758f1, type: 3}
-  - m_RefCount: 21
+  - m_RefCount: 0
+    m_Data: {fileID: 0}
+  - m_RefCount: 30
     m_Data: {fileID: -984316620, guid: a97f2ced1769f2e44a939d6d746758f1, type: 3}
   - m_RefCount: 1
     m_Data: {fileID: -223621561, guid: a97f2ced1769f2e44a939d6d746758f1, type: 3}
@@ -8351,7 +8351,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1128405954}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.051549, y: 0.8407314, z: -10}
+  m_LocalPosition: {x: 1.5497303, y: 0.8667538, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -15260,6 +15260,14 @@ PrefabInstance:
     - target: {fileID: 1684829448898589053, guid: b3ad6c2b2ef31d04a9ea5717003eb1ee, type: 3}
       propertyPath: m_Name
       value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 1684829449556020400, guid: b3ad6c2b2ef31d04a9ea5717003eb1ee, type: 3}
+      propertyPath: m_FallDamage
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1684829449556020400, guid: b3ad6c2b2ef31d04a9ea5717003eb1ee, type: 3}
+      propertyPath: m_MaxFallDistance
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 1684829449556020412, guid: b3ad6c2b2ef31d04a9ea5717003eb1ee, type: 3}
       propertyPath: m_RootOrder

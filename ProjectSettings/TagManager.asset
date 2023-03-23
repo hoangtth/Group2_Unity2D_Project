@@ -9,6 +9,7 @@ TagManager:
   - MoveablePlatform
   - DeadLine
   - Coin
+  - Ground
   layers:
   - Default
   - TransparentFX

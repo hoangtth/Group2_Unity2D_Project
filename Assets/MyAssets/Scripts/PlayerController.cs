@@ -3,7 +3,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Tracing;
+using System.Security.Cryptography;
 using TMPro;
+using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
@@ -32,6 +34,11 @@ public class PlayerController : MonoBehaviour
     //Dash
     [SerializeField] private TrailRenderer tr;
 
+    //Fall down health loss
+    [SerializeField] private float m_MaxFallDistance = 10f;
+    [SerializeField] private float m_FallDamage = 10;
+    private Hashtable PlayerPositionMap = new Hashtable();
+
     private int m_AttackHash;
     private int m_DyingHash;
     private int m_IdleHash;
@@ -51,8 +58,8 @@ public class PlayerController : MonoBehaviour
     private float dashPower = 15f;
     private float dashTime = 0.2f;
     private float dashCooldown = 2f;
-    private List<string> level = new List<string> {"Level_1", "Level_2", "Start_Scene", "End_Scene"};
-    private List<string> level1 = new List<string> {"Start_Scene", "End_Scene"};
+    private List<string> level = new List<string> { "Level_1", "Level_2", "Start_Scene", "End_Scene" };
+    private List<string> level1 = new List<string> { "Start_Scene", "End_Scene" };
 
     private void OnEnable()
     {
@@ -92,7 +99,7 @@ public class PlayerController : MonoBehaviour
         m_WalkingHash = Animator.StringToHash("Walking");
         m_CurHp = m_MaxHp;
 
-        if(onCurHpChanged != null)
+        if (onCurHpChanged != null)
         {
             onCurHpChanged(m_CurHp, m_MaxHp);
         }
@@ -103,7 +110,7 @@ public class PlayerController : MonoBehaviour
         var curScene = SceneManager.GetActiveScene().name;
         if (!level.Contains(curScene))
         {
-            if (isDashing) return; 
+            if (isDashing) return;
         }
 
         if (m_GetHit)
@@ -206,9 +213,9 @@ public class PlayerController : MonoBehaviour
         Color transparent = Color.white;
         transparent.a = 0.25f;
         int i = 0;
-        while(m_GetHitTime > 0)
+        while (m_GetHitTime > 0)
         {
-            if(i % 2 == 0)
+            if (i % 2 == 0)
             {
                 spt.color = Color.white;
             }
@@ -228,6 +235,38 @@ public class PlayerController : MonoBehaviour
         {
             transform.SetParent(collision.transform);
         }
+        /* Fall down damage function. HoanNK */
+
+        //Check collision game obj must "ground" gameobject
+        if (collision.gameObject.CompareTag("Ground") || collision.gameObject.CompareTag("MoveablePlatform"))
+        {
+            PlayerPositionMap.Add("New_Y_Position", transform.position.y);
+            float oldPosition = 0f;
+            float newPosition = 0f;
+            foreach (DictionaryEntry e in PlayerPositionMap)
+            {
+                if (e.Key.Equals("Previous_Y_Position"))
+                    oldPosition = (float)e.Value;
+                if (e.Key.Equals("New_Y_Position"))
+                    newPosition = (float)e.Value;
+            }
+            //Calculate fall distance from player to the ground
+            float fallDistance = Mathf.Abs(oldPosition - newPosition);
+            //If fallDistance greater than max fall distance defined
+            if (fallDistance > m_MaxFallDistance)
+            {
+                //Calculate damage to minus then minus to current player HP
+                int damage = Mathf.RoundToInt((fallDistance - m_MaxFallDistance) * m_FallDamage);
+                m_CurHp -= damage;
+                if (onCurHpChanged != null)
+                {
+                    onCurHpChanged(m_CurHp, m_MaxHp);
+                }
+                //Play FX and sound
+                AudioManager.Instance.PlaySFX_PlayerGetHit();
+                StartCoroutine(GetHitFX());
+            }
+        }
     }
 
     private void OnCollisionStay2D(Collision2D collision)
@@ -243,6 +282,15 @@ public class PlayerController : MonoBehaviour
         if (collision.gameObject.CompareTag("MoveablePlatform"))
         {
             transform.SetParent(null);
+        }
+        if (collision.gameObject.CompareTag("Ground") || collision.gameObject.CompareTag("MoveablePlatform"))
+        {
+            if (PlayerPositionMap.Count > 0 || PlayerPositionMap != null)
+            {
+                PlayerPositionMap.Clear();
+            }
+            //Save the position when player left ground
+            PlayerPositionMap.Add("Previous_Y_Position", transform.position.y);
         }
     }
 
@@ -263,7 +311,7 @@ public class PlayerController : MonoBehaviour
 
             m_Rigidbody.velocity = new Vector2(m_Movementinput.x * m_WalkingSpeed, m_Rigidbody.velocity.y);
         }
-        
+
     }
 
     private void CheckClimb()
