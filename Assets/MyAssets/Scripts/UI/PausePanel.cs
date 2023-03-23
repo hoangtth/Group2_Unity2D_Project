@@ -15,5 +15,15 @@ namespace HDTWarrior
         {
             GamePlayManager.Instance.Restart();
         }
+
+        public void BtnSelect_Pressed()
+        {
+            GamePlayManager.Instance.Select();
+        }
+
+        public void BtnExit_Pressed()
+        {
+            GamePlayManager.Instance.Exit();
+        }
     }
 }
