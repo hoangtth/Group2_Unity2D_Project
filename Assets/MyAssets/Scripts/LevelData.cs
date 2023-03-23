@@ -22,10 +22,5 @@ namespace HDTWarrior
             }
             return string.Empty;
         }
-
-        public string GetFirstLevel()
-        {
-            return levels[0];
-        }
     }
 }

@@ -71,7 +71,7 @@ MonoBehaviour:
     m_RuleTransform: 0
   - m_Id: 3
     m_Sprites:
-    - {fileID: -1037095020, guid: a97f2ced1769f2e44a939d6d746758f1, type: 3}
+    - {fileID: -984316620, guid: a97f2ced1769f2e44a939d6d746758f1, type: 3}
     - {fileID: -984316620, guid: a97f2ced1769f2e44a939d6d746758f1, type: 3}
     - {fileID: 536459146, guid: a97f2ced1769f2e44a939d6d746758f1, type: 3}
     m_GameObject: {fileID: 0}

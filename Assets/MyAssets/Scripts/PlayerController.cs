@@ -3,9 +3,11 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Tracing;
+using System.Security.Cryptography;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
@@ -28,6 +30,14 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private LayerMask m_ClimbableLayerMask;
     [SerializeField] private float m_ClimbSpeed;
 
+    //Dash
+    [SerializeField] private TrailRenderer tr;
+
+    //Fall down health loss
+    [SerializeField] private float m_MaxFallDistance = 10f;
+    [SerializeField] private float m_FallDamage = 10;
+    private Hashtable PlayerPositionMap = new Hashtable();
+
     private int m_AttackHash;
     private int m_DyingHash;
     private int m_IdleHash;
@@ -42,6 +52,12 @@ public class PlayerController : MonoBehaviour
     private bool m_GetHit;
     private float m_GetHitTime;
     private bool m_Dead;
+    private bool canDash = true;
+    private bool isDashing;
+    private float dashPower = 15f;
+    private float dashTime = 0.2f;
+    private float dashCooldown = 2f;
+    private List<string> level = new List<string> { "Level_1", "Level_2", "Start_Level", "End_Scene" };
 
     private void OnEnable()
     {
@@ -59,6 +75,10 @@ public class PlayerController : MonoBehaviour
             m_PlayerInput.Player.Attack.started += OnAttack;
             m_PlayerInput.Player.Attack.performed += OnAttack;
             m_PlayerInput.Player.Attack.canceled += OnAttack;
+
+            m_PlayerInput.Player.Skill.started += OnDash;
+            m_PlayerInput.Player.Skill.performed += OnDash;
+            m_PlayerInput.Player.Skill.canceled += OnDash;
         }
         m_PlayerInput.Enable();
     }
@@ -77,7 +97,7 @@ public class PlayerController : MonoBehaviour
         m_WalkingHash = Animator.StringToHash("Walking");
         m_CurHp = m_MaxHp;
 
-        if(onCurHpChanged != null)
+        if (onCurHpChanged != null)
         {
             onCurHpChanged(m_CurHp, m_MaxHp);
         }
@@ -85,6 +105,12 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
+        var curScene = SceneManager.GetActiveScene().name;
+        if (!level.Contains(curScene))
+        {
+            if (isDashing) return;
+        }
+
         if (m_GetHit)
         {
             m_GetHitTime -= Time.deltaTime;
@@ -97,6 +123,12 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
+        var curScene = SceneManager.GetActiveScene().name;
+        if (!level.Contains(curScene))
+        {
+            if (isDashing) return;
+        }
+
         if (m_GetHit || m_Dead)
         {
             return;
@@ -145,6 +177,33 @@ public class PlayerController : MonoBehaviour
 
             StartCoroutine(GetHitFX());
         }
+
+        if (collision.gameObject.CompareTag("DeadLine"))
+        {
+            m_CurHp -= 100;
+            m_Dead = true;
+            AudioManager.Instance.PlaySFX_PlayerDead();
+            GamePlayManager.Instance.Gameover(false);
+            return;
+        }
+
+        if (collision.gameObject.CompareTag("Coin"))
+        {
+            if (m_CurHp == m_MaxHp)
+            {
+
+            }
+            else
+            {
+                if (m_CurHp + 20 > m_MaxHp) m_CurHp = m_MaxHp;
+                else m_CurHp += 20;
+                
+                if (onCurHpChanged != null)
+                {
+                    onCurHpChanged(m_CurHp, m_MaxHp);
+                }
+            }
+        }
     }
 
     private IEnumerator GetHitFX()
@@ -154,9 +213,9 @@ public class PlayerController : MonoBehaviour
         Color transparent = Color.white;
         transparent.a = 0.25f;
         int i = 0;
-        while(m_GetHitTime > 0)
+        while (m_GetHitTime > 0)
         {
-            if(i % 2 == 0)
+            if (i % 2 == 0)
             {
                 spt.color = Color.white;
             }
@@ -176,6 +235,38 @@ public class PlayerController : MonoBehaviour
         {
             transform.SetParent(collision.transform);
         }
+        /* Fall down damage function. HoanNK */
+
+        //Check collision game obj must "ground" gameobject
+        if (collision.gameObject.CompareTag("Ground") || collision.gameObject.CompareTag("MoveablePlatform"))
+        {
+            PlayerPositionMap.Add("New_Y_Position", transform.position.y);
+            float oldPosition = 0f;
+            float newPosition = 0f;
+            foreach (DictionaryEntry e in PlayerPositionMap)
+            {
+                if (e.Key.Equals("Previous_Y_Position"))
+                    oldPosition = (float)e.Value;
+                if (e.Key.Equals("New_Y_Position"))
+                    newPosition = (float)e.Value;
+            }
+            //Calculate fall distance from player to the ground
+            float fallDistance = Mathf.Abs(oldPosition - newPosition);
+            //If fallDistance greater than max fall distance defined
+            if (fallDistance > m_MaxFallDistance)
+            {
+                //Calculate damage to minus then minus to current player HP
+                int damage = Mathf.RoundToInt((fallDistance - m_MaxFallDistance) * m_FallDamage);
+                m_CurHp -= damage;
+                if (onCurHpChanged != null)
+                {
+                    onCurHpChanged(m_CurHp, m_MaxHp);
+                }
+                //Play FX and sound
+                AudioManager.Instance.PlaySFX_PlayerGetHit();
+                StartCoroutine(GetHitFX());
+            }
+        }
     }
 
     private void OnCollisionStay2D(Collision2D collision)
@@ -191,6 +282,15 @@ public class PlayerController : MonoBehaviour
         if (collision.gameObject.CompareTag("MoveablePlatform"))
         {
             transform.SetParent(null);
+        }
+        if (collision.gameObject.CompareTag("Ground") || collision.gameObject.CompareTag("MoveablePlatform"))
+        {
+            if (PlayerPositionMap.Count > 0 || PlayerPositionMap != null)
+            {
+                PlayerPositionMap.Clear();
+            }
+            //Save the position when player left ground
+            PlayerPositionMap.Add("Previous_Y_Position", transform.position.y);
         }
     }
 
@@ -233,7 +333,6 @@ public class PlayerController : MonoBehaviour
 
     private void OnJump(InputAction.CallbackContext context)
     {
-        //If attacking, don't jump
         if (m_AttackInput || m_GetHit || m_Dead)
             return;
 
@@ -250,24 +349,54 @@ public class PlayerController : MonoBehaviour
 
     private void OnMovement(InputAction.CallbackContext context)
     {
-        if (context.started || context.performed)
+        if (m_WalkingSpeed > 0)
         {
-            m_Movementinput = context.ReadValue<Vector2>();
-            transform.localScale = new Vector3(m_Movementinput.x >= 0 ? 1 : -1, 1, 1);
-        }
-        else
-        {
-            m_Movementinput = Vector2.zero;
+            if (context.started || context.performed)
+            {
+                m_Movementinput = context.ReadValue<Vector2>();
+                transform.localScale = new Vector3(m_Movementinput.x >= 0 ? 1 : -1, 1, 1);
+            }
+            else
+            {
+                m_Movementinput = Vector2.zero;
+            }
         }
     }
 
-    //Handle on attack event
     private void OnAttack(InputAction.CallbackContext ctx)
     {
-        if (ctx.started || ctx.performed)
-            m_AttackInput = true;
-        else
-            m_AttackInput = false;
+        if (m_WalkingSpeed > 0)
+        {
+            if (ctx.started || ctx.performed)
+                m_AttackInput = true;
+            else
+                m_AttackInput = false;
+        } 
+    }
+
+    private void OnDash(InputAction.CallbackContext context)
+    {
+        var curScene = SceneManager.GetActiveScene().name;
+        if (context.started || context.performed)
+        {
+            if (canDash && !level.Contains(curScene)) StartCoroutine(Dash());
+        }
+    }
+
+    private IEnumerator Dash()
+    {
+        canDash = false;
+        isDashing = true;
+        float originalGravity = m_Rigidbody.gravityScale;
+        m_Rigidbody.gravityScale = 0;
+        m_Rigidbody.velocity = new Vector2(transform.localScale.x * dashPower, 0f);
+        tr.emitting = true;
+        yield return new WaitForSeconds(dashTime);
+        tr.emitting = false;
+        m_Rigidbody.gravityScale = originalGravity;
+        isDashing = false;
+        yield return new WaitForSeconds(dashCooldown);
+        canDash = true;
     }
 
     private void PlayAttackSFX()
