@@ -257,11 +257,25 @@ public class PlayerController : MonoBehaviour
             {
                 //Calculate damage to minus then minus to current player HP
                 int damage = Mathf.RoundToInt((fallDistance - m_MaxFallDistance) * m_FallDamage);
-                m_CurHp -= damage;
+                if (m_CurHp - damage <= 0)
+                {
+                    m_CurHp = 0;
+                    m_Dead = true;
+                    AudioManager.Instance.PlaySFX_PlayerDead();
+                    GamePlayManager.Instance.Gameover(false);
+                    PlayDyingAnim();
+                    return;
+                }
+                else
+                {
+                    m_CurHp -= damage;
+                }
+
                 if (onCurHpChanged != null)
                 {
                     onCurHpChanged(m_CurHp, m_MaxHp);
                 }
+
                 //Play FX and sound
                 AudioManager.Instance.PlaySFX_PlayerGetHit();
                 StartCoroutine(GetHitFX());
